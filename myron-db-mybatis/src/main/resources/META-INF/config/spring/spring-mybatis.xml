@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.1.xsd
+	http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-4.1.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+	http://www.springframework.org/schema/mvc  
+	http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+	http://www.springframework.org/schema/tx    
+	http://www.springframework.org/schema/tx/spring-tx-4.1.xsd"> 
+	
+
+	<!-- 数据源配置,不使用连接池 jdbc dataSource-->
+	<bean id="dataSource1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">         
+		<property name="driverClassName" value="${datasource.driverClassName}"/>        
+		<property name="url" value="${datasource.url}"/>         
+		<property name="username" value="${datasource.username}"/>         
+		<property name="password" value="${datasource.password}"/>    
+	</bean>
+	
+	<!-- 数据源配置,使用Druid连接池 --> 
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource " init-method="init" destroy-method="close"> 
+		<!-- 基本属性 url、user、password --> 
+		<property name="url"  value="${datasource.url}"/>         
+		<property name="username" value="${datasource.username}" />         
+		<property name="password" value="${datasource.password}" />  
+		<property name="connectionProperties" value="${datasource.driverClassName}"/>
+
+		<!-- 配置初始化大小、最小、最大 --> 
+		<property name="initialSize" value="1" /> 
+		<property name="minIdle" value="1" /> 
+		<property name="maxActive" value="20" />
+
+		<!-- 配置获取连接等待超时的时间 
+		<property name="maxWait" value="60000" />--> 
+
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒  
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />-->
+
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 'x'" /> 
+		<property name="testWhileIdle" value="true" /> 
+		<property name="testOnBorrow" value="false" /> 
+		<property name="testOnReturn" value="false" />--> 
+
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<!-- 如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false。分库分表较多的数据库，建议配置为false。
+		<property name="poolPreparedStatements" value="false" /> 
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" /> --> 
+
+		<!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 --> 
+		<property name="filters" value="stat" />
+
+	</bean>        
+	
+	<!-- SqlSessionFactory-->       
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">        
+		<property name="dataSource" ref="dataSource" />
+		<!-- <property name="mapperLocations" value="classpath*:META-INF/config/mappings/*.xml"/>  -->   
+		<property name="mapperLocations" value="${mybatis.mapperLocations}"/>    
+		<property name="configLocation" value="classpath:META-INF/config/mybatis-config.xml"/>    
+	</bean>    
+	
+	<!-- 定义 sqlSessionTemplate-->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+	</bean>
+	
+	<!--定义Mapper
+		<bean id="menuDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+			<property name="mapperInterface" value="com.zefu.ims.dao.MenuDao"/>
+			<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+		</bean>
+		-->
+	
+	<!--
+		MapperScannerConfigurer可以批量扫描MyBatis的Mapper接口,并为每个接口生成MapperFactoryBean实例
+		实例的id为首字母小写的接口名称
+	-->	
+	<!-- 扫描basePackage下所有以@MyBatisDao注解的接口 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- <property name="basePackage" value="com.myron.ims.dao" /> -->
+		<property name="basePackage" value="com.myron.**.dao" />
+		<property name="annotationClass" value="com.myron.db.mybatis.annotation.MyBatisRepository" />
+	</bean>
+	
+	<!-- 注意：MapperScannerConfigurerkey 不用写dao接口的实现类比较方便,一般推荐使用
+			  如果dao要使用spring-cache实现缓存,最好采用下面的方式,方便XxxdaoImpl的方法上配置缓存-->
+	<!--使用DAO实现类注入sqlSessionTemplate的方式 
+	<context:component-scan base-package="com.myron.ims.dao"/> 
+	-->
+</beans>

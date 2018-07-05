@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE generatorConfiguration  
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"  
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+	<context id="DB2Tables" targetRuntime="MyBatis3">
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+		<plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin" />
+		<!-- 自定义的分页插件 -->
+		<!-- <plugin type="org.mybatis.generator.plugins.SelectListPlugin" /> -->
+		<!-- 是否需要自动生成注释 -->
+		<commentGenerator>
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://192.168.150.131:3306/db_myron_extjs?characterEncoding=utf8" 
+			userId="root"
+			password="123456">
+		</jdbcConnection>
+	
+
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="true" />
+		</javaTypeResolver>
+		<!--生成Model类存放位置-->
+		<javaModelGenerator targetProject="src/main/java" targetPackage="com.myron.ims.bean.test">    
+			<property name="enableSubPackages" value="false" /><!-- enableSubPackages:是否让schema作为包的后缀  -->
+			<property name="trimStrings" value="true" /><!-- 从数据库返回的值被清理前后的空格  --> 
+		</javaModelGenerator>
+		
+		<!--生成映射文件存放位置-->    
+		<sqlMapGenerator targetProject="src/main/java" targetPackage="com.myron.ims.dao.test" >
+            <property name="enableSubPackages" value="true"/>
+       	</sqlMapGenerator>
+       	 <!--生成Dao类存放位置-->
+     	<javaClientGenerator type="XMLMAPPER" targetProject="src/main/java" targetPackage="com.myron.ims.dao.test" >
+             <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        
+        <!--生成对应表及类名-->
+        <table tableName="m_manager" 
+        	domainObjectName="Manager" 
+        	enableCountByExample="false" 
+        	enableUpdateByExample="false" 
+        	enableDeleteByExample="false" 
+        	enableSelectByExample="false" 
+        	selectByExampleQueryId="false">
+        </table>
+
+
+		<!-- <table tableName="sys_dic_tbl" domainObjectName="Dictionary"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false"
+			selectByExampleQueryId="false">
+		</table> -->
+	
+		
+	</context>
+</generatorConfiguration> 

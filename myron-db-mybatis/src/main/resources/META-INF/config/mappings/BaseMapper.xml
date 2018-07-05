@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace用于接口绑定-->
+<mapper namespace="com.myron.ims.dao.BaseMapper">
+	<!-- 获取映射成 Map 的对象 -->
+	<select id="select" parameterType="string" resultType="hashmap">
+		<![CDATA[ ${value} ]]>
+	</select>
+	
+	<!-- 获取映射成 Map 的对象列表 -->
+	<select id="selectList" parameterType="string" resultType="hashmap">
+		<![CDATA[ ${value} ]]>
+	</select>
+</mapper>

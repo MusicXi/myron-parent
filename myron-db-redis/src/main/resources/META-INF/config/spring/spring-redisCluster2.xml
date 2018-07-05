@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:cache="http://www.springframework.org/schema/cache" 
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.1.xsd
+	http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-4.1.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+	http://www.springframework.org/schema/mvc  
+	http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+	http://www.springframework.org/schema/tx    
+	http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+	http://www.springframework.org/schema/cache    
+	http://www.springframework.org/schema/cache/spring-cache.xsd"> 
+            
+	<description>Jedis Cluster Configuration集群</description>
+	
+	<!-- 注意!!!!!!!!只有本项目单元测试时,使用该属性文件测试 -->
+	<context:property-placeholder location="classpath:redisCluster2.properties"/> 
+	
+	<!-- 自动扫描dao和service包(自动注入) -->
+	<context:component-scan base-package="com.myron.db.redis.dao"/> 
+	
+	<!--这里注入的是JedisPoolConfig,说spirng-data-redis依赖Jedis-->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">  
+		<property name="maxIdle" value="${redis.maxIdle}" />  
+		<property name="maxTotal" value="${redis.maxTotal}" />
+		<property name="maxWaitMillis" value="${redis.maxWaitMillis}" />   
+		<property name="testOnBorrow" value="${redis.testOnBorrow}" />  
+	</bean> 
+    
+
+    
+	<bean id="redisClusterConfig" class="com.myron.db.redis.cluster.RedisClusterConfiguration">  
+		<property name="maxRedirects" value="${redisCluster.maxRedirects}" /> 
+		<property name="addressConfig">
+			<value>classpath:redisCluster2.properties</value>
+		</property>
+		<property name="addressKeyPrefix" value="redisCluster.host" /> <!-- 属性文件里 key的前缀 -->  
+	</bean> 
+     
+	<bean id = "redisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<constructor-arg name="poolConfig" ref="jedisPoolConfig"/>
+		<constructor-arg name="clusterConfig" ref="redisClusterConfig"/> 
+	
+	</bean>
+      
+	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">  
+		<property name="connectionFactory"   ref="redisConnectionFactory" />  
+		<!-- 不配置Serializer，存储只能使用String，用User存储，会提示错误User can't cast to String-->
+		<property name="keySerializer">
+			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+		</property>
+		<property name="valueSerializer">
+			<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+		</property>
+		<!-- <property name="enableTransactionSupport" value="true" /> -->
+	</bean> 
+    
+	<!-- 开启缓存注解 项目内单元测试时候开启
+		<cache:annotation-driven cache-manager="redisCacheManager"/> 
+		-->
+	<!-- 缓存管理器  redis 实现  默认id="cacheManager" 将直接作为spring默认缓存管理器-->
+	<bean id="redisCacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+		<constructor-arg index="0" ref="stringRedisTemplate"/>
+	</bean>
+</beans>

@@ -1,0 +1,22 @@
+<form class="form-horizontal detailform">
+	<div class="modal-header">
+		<h4 class="modal-title">{{${dsTable.tableName}}}</h4>
+	</div>
+	<div class="modal-body">
+		<input name="${dsTable.idColumn.property}" type="hidden">
+		<#list dsTable.dsColumnExIdList as column>
+		<div class="col-md-6">
+			<div class="form-group required">
+				<label class="col-sm-4 control-label">{{${column.column}}}</label>
+				<div class="col-sm-8 input-group">
+					<input name="${column.property}" class="form-control" data-rule="{{${column.column}}}:required;">
+				</div>
+			</div>
+		</div>
+		</#list>
+	</div> 
+	<div class="modal-footer">
+		<button class="btn btn-success btn_minwidth commitbtn">{{COMMON_COMMIT}}</button>
+		<button class="btn btn-danger btn_minwidth resetbtn" type="reset">{{COMMON_RESET}}</button>
+	</div>
+</form>

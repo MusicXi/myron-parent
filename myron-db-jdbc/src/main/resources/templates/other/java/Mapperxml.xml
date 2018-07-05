@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="${modelPath}.db.dao.mapper.I${dsTable.methodTableName}Mapper" >
+  <resultMap id="BaseResultMap" type="${modelPath}.db.po.${dsTable.methodTableName}PO">
+  	<id column="${dsTable.idColumn.field}" property="${dsTable.idColumn.property}" jdbcType="${dsTable.idColumn.jdbcType}" />
+  	<#list dsTable.dsColumnExIdList as column>
+  	<result column="${column.column}" property="${column.property}" jdbcType="${column.jdbcType}" />
+    </#list>
+  </resultMap>
+  <sql id="Base_Column_List" >
+  	${mapper.sqlIdMap.baseColumnList}
+  </sql>
+  <sql id="Arg_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${'$'}{criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${'$'}{criterion.condition} ${'#'}{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${'$'}{criterion.condition} ${'#'}{criterion.value} and ${'#'}{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${'$'}{criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    ${'#'}{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Arg_Where_Clause" >
+    <where >
+      <foreach collection="arg.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${'$'}{criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${'$'}{criterion.condition} ${'#'}{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${'$'}{criterion.condition} ${'#'}{criterion.value} and ${'#'}{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${'$'}{criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    ${'#'}{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>  
+  <select id="selectByArg" resultMap="BaseResultMap" parameterType="${modelPath}.db.arg.${dsTable.methodTableName}Arg" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from ${dsTable.tableName}
+    <if test="_parameter != null" >
+      <include refid="Arg_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${'$'}{orderByClause}
+    </if>
+  </select>  
+  <select id="selectByArgAndPage" resultMap="BaseResultMap" parameterType="${modelPath}.db.arg.${dsTable.methodTableName}Arg" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+     <if test="columns == null" >
+    	<include refid="Base_Column_List" />
+    </if>
+    <if test="columns != null" >
+    	${'$'}{columns}
+   	</if>
+    from ${dsTable.tableName}
+    <if test="_parameter != null" >
+      <include refid="Arg_Where_Clause" />
+    </if>
+	<if test="groupByClause != null" >
+      group by ${'$'}{groupByClause}
+    </if>
+    <if test="orderByClause != null" >
+      order by ${'$'}{orderByClause}
+    </if>
+  </select>
+  <select id="countByArg" parameterType="${modelPath}.db.arg.${dsTable.methodTableName}Arg" resultType="java.lang.Integer" >
+    <if test="countsql1 != null" >
+    	${'$'}{countsql1}
+    	<if test="_parameter != null" >
+		  <include refid="Arg_Where_Clause" />
+		</if>
+		${'$'}{countsql2}
+    </if>
+	<if test="countsql1 == null" >
+		select count(*) from ${dsTable.tableName}
+		<if test="_parameter != null" >
+		  <include refid="Arg_Where_Clause" />
+		</if>
+	</if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+	select
+	<include refid="Base_Column_List" />
+	from ${dsTable.tableName}
+	where ${dsTable.idColumn.field} = ${'#'}{${dsTable.idColumn.property},jdbcType=${dsTable.idColumn.jdbcType}}
+  </select>
+  <insert id="insert" parameterType="${modelPath}.db.po.${dsTable.methodTableName}PO"  >
+		insert into ${dsTable.tableName}(${dsColumnStr})
+		values (${dsColumnValues})
+  </insert>
+  <insert id="insertSelective" parameterType="${modelPath}.db.po.${dsTable.methodTableName}PO">
+		insert into ${dsTable.tableName}
+	<trim prefix="(" suffix=")" suffixOverrides="," >
+		<#list dsTable.dsColumnList as column>
+		<if test="${column.property} != null" >
+			${column.field},
+		</if>
+		</#list>		
+ 	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides="," >
+		<#list dsTable.dsColumnList as column>
+		<if test="${column.property} != null" >
+			${'#'}{${column.property},jdbcType=${column.jdbcType}},
+		</if>
+		</#list>		
+ 	</trim> 	
+  </insert>	
+  <insert id="insertBatch" parameterType="list"  >
+	insert into ${dsTable.tableName}(${dsColumnStr})
+	 values 
+	 <foreach collection="list" item="item" index="index" separator=",">
+	 		(${dsColumnListItemValues})
+	 </foreach>
+  </insert>
+  <update id="updateByArgSelective" parameterType="map" >
+    update ${dsTable.tableName}
+    <set>
+		<#list dsTable.dsColumnExIdList as column>
+		<#if column_has_next> 
+		<if test="record.${column.property} != null" >
+			${column.field}= ${'#'}{record.${column.property},jdbcType=${column.jdbcType}},
+		</if>
+		</#if>
+		<#if !column_has_next> 
+		<if test="record.${column.property} != null" >
+			${column.field}= ${'#'}{record.${column.property},jdbcType=${column.jdbcType}}
+		</if>
+		</#if>		
+		</#list>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Arg_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByArg" parameterType="map" >
+    update ${dsTable.tableName}
+    set 
+	<#list dsTable.dsColumnList as column>
+		<#if column_has_next> 
+		${column.field} = ${'#'}{record.${column.property},jdbcType=${column.jdbcType}},
+  		</#if>
+		<#if !column_has_next> 
+		${column.field} = ${'#'}{record.${column.property},jdbcType=${column.jdbcType}}
+		</#if>
+	</#list>     
+    <if test="_parameter != null" >
+      <include refid="Update_By_Arg_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="${modelPath}.db.po.${dsTable.methodTableName}PO" >
+		update ${dsTable.tableName}
+	<set >
+	<#list dsTable.dsColumnExIdList as column>
+	<#if column_has_next> 
+	<if test="${column.property} != null" >
+		${column.field} = ${'#'}{${column.property},jdbcType=${column.jdbcType}},
+	</if>
+	</#if>
+	<#if !column_has_next> 
+	<if test="${column.property} != null" >
+		${column.field} = ${'#'}{${column.property},jdbcType=${column.jdbcType}}
+	</if>
+	</#if>
+	</#list> 	
+	</set >
+	 where ${dsTable.idColumn.field} = ${'#'}{${dsTable.idColumn.property},jdbcType=${dsTable.idColumn.jdbcType}}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="${modelPath}.db.po.${dsTable.methodTableName}PO" >
+		update ${dsTable.tableName}
+		set 
+		<#list dsTable.dsColumnExIdList as column>
+		<#if column_has_next> 
+			${column.field} = ${'#'}{${column.property},jdbcType=${column.jdbcType}},
+		</#if>
+		<#if !column_has_next> 
+			${column.field} = ${'#'}{${column.property},jdbcType=${column.jdbcType}}
+		</#if>		
+		</#list> 
+	 where ${dsTable.idColumn.field} = ${'#'}{${dsTable.idColumn.property},jdbcType=${dsTable.idColumn.jdbcType}}
+   </update>
+  <delete id="deleteByArg" parameterType="${modelPath}.db.arg.${dsTable.methodTableName}Arg" >
+    delete from ${dsTable.tableName}
+    <if test="_parameter != null" >
+      <include refid="Arg_Where_Clause" />
+    </if>
+  </delete>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+	 delete from ${dsTable.tableName}
+	 where ${dsTable.idColumn.field} = ${'#'}{${dsTable.idColumn.property},jdbcType=${dsTable.idColumn.jdbcType}}
+  </delete>
+</mapper>  

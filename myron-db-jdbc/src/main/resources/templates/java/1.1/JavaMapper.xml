@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace用于接口绑定-->
+<mapper namespace="${table.projectName}.dao.${table.className}Dao">
+
+	<resultMap id="BaseResultMap" type="${table.projectName}.bean.${table.className}">
+		<#list table.columnList as column>
+	    <#if column.key=="PRI">
+	    <id column="${column.field}" property="${column.camelField}" jdbcType="${column.jdbcType}" /> 
+	    <#else>
+		<result column="${column.field}" property="${column.camelField}" jdbcType="${column.jdbcType}" />
+	    </#if>	
+		</#list>
+	</resultMap>
+	
+	<resultMap id="DataResultMap" type="java.util.Map">
+	    <#list table.columnList as column>
+	    <#if column.key=="PRI">
+	    <id column="${column.field}" property="${column.camelField}" jdbcType="${column.jdbcType}" /> 
+	    <#else>
+		<result column="${column.field}" property="${column.camelField}" jdbcType="${column.jdbcType}" />
+	    </#if>	
+		</#list>
+	</resultMap>	
+	
+	<sql id="Base_Column_List" >
+	<#list table.columnList as column>
+		t.${column.field} <#if column_has_next>,</#if>
+    </#list>
+  	</sql>
+  	
+  	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+  		select 
+	    <include refid="Base_Column_List" />
+	    from ${table.tableName} t 
+	    <#list table.columnList as column>
+	    <#if column.key=="PRI">
+	    where t.${column.field} = ${'#'}{${column.camelField}}
+	    <#break>
+	    </#if>
+	    </#list>	
+  	</select>
+  	
+  	<select id="selectList" resultMap="BaseResultMap">
+  		select 
+	    <include refid="Base_Column_List" />
+	    from ${table.tableName} t
+  	</select>
+  	
+  	<select id="selectListByPage" resultMap="BaseResultMap">
+  		select 
+	    <include refid="Base_Column_List" />
+	    from ${table.tableName} t
+	    <where>
+	    <#list table.columnList as column>
+	    	<#if column.jdbcType =="VARCHAR">
+	    	<if test="${table.className?uncap_first}.${column.camelField} != null and ${table.className?uncap_first}.${column.camelField} !='' ">
+	    	 	and t.${column.field} =${'#'}{${table.className?uncap_first}.${column.camelField}}
+	    	</if>
+	    	<#else>
+	    	<if test="${table.className?uncap_first}.${column.camelField} != null ">
+	    	 	and t.${column.field} =${'#'}{${table.className?uncap_first}.${column.camelField}}
+	    	</if>
+	    	</#if>
+	    </#list>
+	    </where>
+	    <if test="page.sortName != null and page.sortOrder!=null">
+    	order by ${'$'}{page.sortName} ${'$'}{page.sortOrder} 
+		</if>
+  	</select>
+  	
+  	<select id="selectMapList" resultMap="DataResultMap">
+  		select 
+	    <include refid="Base_Column_List" />
+	    from ${table.tableName} t
+  	</select>
+  	
+  	<select id="selectMapListByPage" resultMap="DataResultMap">
+  		select 
+	    <include refid="Base_Column_List" />
+	    from ${table.tableName} t
+	    <where>
+	    <#list table.columnList as column>
+	    	<#if column.jdbcType =="VARCHAR">
+	    	<if test="${table.className?uncap_first}.${column.camelField} != null and ${table.className?uncap_first}.${column.camelField} !='' ">
+	    	 	and t.${column.field} =${'#'}{${table.className?uncap_first}.${column.camelField}}
+	    	</if>
+	    	<#else>
+	    	<if test="${table.className?uncap_first}.${column.camelField} != null ">
+	    	 	and t.${column.field} =${'#'}{${table.className?uncap_first}.${column.camelField}}
+	    	</if>
+	    	</#if>
+	    </#list>
+	    </where>
+	    <if test="page.sortName != null and page.sortOrder!=null">
+    	order by ${'$'}{page.sortName} ${'$'}{page.sortOrder} 
+		</if>
+  	</select>
+
+	
+	<insert id="insert" parameterType="${table.projectName}.bean.${table.className}" >
+	    insert into ${table.tableName} (
+			<#list table.columnList as column>
+			${column.field}<#if column_has_next>,</#if>
+		    </#list>
+	    )values (
+	      	<#list table.columnList as column>
+	      	${'#'}{${column.camelField},jdbcType=${column.jdbcType}}<#if column_has_next>,</#if>
+		    </#list>
+	    )
+  	</insert>
+  	
+	<insert id="insertByBatch" parameterType="java.util.List" >
+	    insert into ${table.tableName} (
+			<#list table.columnList as column>
+			${column.field}<#if column_has_next>,</#if>
+		    </#list>
+	    )values  
+	    <foreach collection="list" item="item" index="index" separator=",">
+	    (
+	      	<#list table.columnList as column>
+	      	${'#'}{item.${column.camelField},jdbcType=${column.jdbcType}}<#if column_has_next>,</#if>
+		    </#list>
+	    )
+	    </foreach>
+  	</insert>
+  	
+  	<insert id="insertSelective" parameterType="${table.projectName}.bean.${table.className}" >
+	    insert into ${table.tableName}
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      	<#list table.columnList as column>
+			<if test="${column.camelField} != null">
+				${column.field},
+			</if>
+		  	</#list>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	    	<#list table.columnList as column>
+			<if test="${column.camelField} != null">
+				${'#'}{${column.camelField},jdbcType=${column.jdbcType}},
+			</if>
+		  	</#list>
+	    </trim>
+    </insert>
+    
+    <delete id="deleteByPrimaryKey">
+		<#list table.columnList as column>
+	    <#if column.key=="PRI">
+	    delete from ${table.tableName} where ${column.field}= ${'#'}{${column.camelField}}
+	    </#if>	
+		</#list>
+	</delete>
+  	
+  	<update id="updateByPrimaryKey" parameterType="${table.projectName}.bean.${table.className}">
+		update ${table.tableName} set
+		<#list table.columnList as column>
+			<#if column.key!="PRI">
+			${column.field}=${'#'}{${column.camelField}}<#if column_has_next>,</#if>	
+			</#if>
+		</#list>
+		<#list table.columnList as column>
+		    <#if column.key=="PRI">
+		where ${column.field}=${'#'}{${column.camelField}}
+		    </#if>
+	    </#list>
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="${table.projectName}.bean.${table.className}">
+		update ${table.tableName} 
+		<set>
+			<#list table.columnList as column>
+			<#if column.key!="PRI">
+			<if test="${column.camelField} != null">
+				${column.field}=${'#'}{${column.camelField}},
+			</if>
+			</#if>
+		    </#list>
+		</set>
+		<#list table.columnList as column>
+		    <#if column.key=="PRI">
+		where ${column.field}=${'#'}{${column.camelField}}
+		    </#if>
+	    </#list>
+	</update>
+	
+
+  	
+</mapper>

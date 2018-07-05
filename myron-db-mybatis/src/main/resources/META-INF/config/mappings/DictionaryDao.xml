@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.myron.ims.dao.DictionaryDao">
+	<resultMap id="BaseResultMap" type="com.myron.ims.bean.DictionaryItem">
+		<id column="dictionary_item_id" property="dictionaryItemId"
+			jdbcType="VARCHAR" />
+		<result column="dictionary_id" property="dictionaryId"
+			jdbcType="VARCHAR" />
+		<result column="value" property="value" jdbcType="VARCHAR" />
+		<result column="text" property="text" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="INTEGER" />
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		a.dictionary_item_id, 
+		a.dictionary_id, 
+		a.value, 
+		a.text, 
+		a.sort, 
+		a.parent_id
+	</sql>
+	<select id="findList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_dictionary_item a
+		join sys_dictionary b on a.dictionary_id=b.dictionary_id
+		where a.dictionary_id= #{dictionaryId,jdbcType=VARCHAR}
+	</select>
+	<select id="findAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_dictionary_item a
+		join sys_dictionary b on a.dictionary_id=b.dictionary_id
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from sys_dictionary_item a
+		where dictionary_item_id = #{dictionaryItemId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from sys_dictionary_item
+		where dictionary_item_id = #{dictionaryItemId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.myron.ims.bean.DictionaryItem">
+		insert into sys_dictionary_item (dictionary_item_id, dictionary_id,
+		value,
+		text, sort, parent_id
+		)
+		values (#{dictionaryItemId,jdbcType=VARCHAR},
+		#{dictionaryId,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR},
+		#{text,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER},
+		#{parentId,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.myron.ims.bean.DictionaryItem">
+		insert into sys_dictionary_item
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="dictionaryItemId != null">
+				dictionary_item_id,
+			</if>
+			<if test="dictionaryId != null">
+				dictionary_id,
+			</if>
+			<if test="value != null">
+				value,
+			</if>
+			<if test="text != null">
+				text,
+			</if>
+			<if test="sort != null">
+				sort,
+			</if>
+			<if test="parentId != null">
+				parent_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="dictionaryItemId != null">
+				#{dictionaryItemId,jdbcType=VARCHAR},
+			</if>
+			<if test="dictionaryId != null">
+				#{dictionaryId,jdbcType=VARCHAR},
+			</if>
+			<if test="value != null">
+				#{value,jdbcType=VARCHAR},
+			</if>
+			<if test="text != null">
+				#{text,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				#{sort,jdbcType=INTEGER},
+			</if>
+			<if test="parentId != null">
+				#{parentId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.myron.ims.bean.DictionaryItem">
+		update sys_dictionary_item
+		<set>
+			<if test="dictionaryId != null">
+				dictionary_id = #{dictionaryId,jdbcType=VARCHAR},
+			</if>
+			<if test="value != null">
+				value = #{value,jdbcType=VARCHAR},
+			</if>
+			<if test="text != null">
+				text = #{text,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				sort = #{sort,jdbcType=INTEGER},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where dictionary_item_id = #{dictionaryItemId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.myron.ims.bean.DictionaryItem">
+		update sys_dictionary_item
+		set dictionary_id = #{dictionaryId,jdbcType=VARCHAR},
+		value = #{value,jdbcType=VARCHAR},
+		text = #{text,jdbcType=VARCHAR},
+		sort = #{sort,jdbcType=INTEGER},
+		parent_id = #{parentId,jdbcType=VARCHAR}
+		where dictionary_item_id = #{dictionaryItemId,jdbcType=VARCHAR}
+	</update>
+
+
+</mapper>

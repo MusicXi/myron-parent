@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/mongo 
+		http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-4.1.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+		http://www.springframework.org/schema/tx    
+		http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+	
+	<description>mongodb集群配置</description>
+	<!-- 注意!!!!!!!!只有本项目单元测试时,使用该属性文件测试  -->
+	<context:property-placeholder location="classpath:META-INF/config/mongodb-replica.properties"/>
+	
+	<!--
+	credentials="siteRootAdmin:root@admin" 安全认证
+	replica-set 主从ip地址和端口
+	connect-timeout 连接超时时间
+	threads-allowed-to-block-for-connection-multiplier
+	-->
+	<mongo:mongo-client id="mongo" credentials="${mongo.credentials}" replica-set="${mongo.host.replica}">
+		<mongo:client-options connect-timeout="${mongo.client.connect-timeout}"
+		threads-allowed-to-block-for-connection-multiplier="${mongo.client.tatbf}"
+		max-connection-idle-time="${mongo.client.max-connection-idle-time}"
+		max-wait-time="${mongo.client.max-wait-time}"
+		heartbeat-connect-timeout="${mongo.client.heartbeat-connect-timeout}"
+		connections-per-host="${mongo.client.connections-per-host}"
+		min-connections-per-host="${mongo.client.min-connections-per-host}"
+		socket-keep-alive="${mongo.client.socket-keep-alive}"/>
+	</mongo:mongo-client> 
+	<!-- max-connection-life-time="30000" -->
+	
+	<mongo:db-factory id="mongoDbFactory" authentication-dbname="testXN" mongo-ref="mongo" dbname="${mongo.db.name}" />
+	
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate"
+		c:mongoDbFactory-ref="mongoDbFactory" /> 
+
+  	<mongo:repositories base-package="com.myron.db.mongodb.dao" />
+  	
+  	<context:component-scan base-package="com.myron.db.mongodb.dao"/> 
+  
+</beans>
