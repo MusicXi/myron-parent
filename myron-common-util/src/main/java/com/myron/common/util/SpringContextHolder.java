@@ -1,5 +1,7 @@
 package com.myron.common.util;
 
+import java.lang.reflect.Method;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -46,5 +48,41 @@ public class SpringContextHolder implements ApplicationContextAware{
 	 */
 	public static <T> T getBean(Class<T> requiredType) {
 		return applicationContext.getBean(requiredType);
+	}
+	
+	/**
+	 * 校验Bean是否存在方法
+	 * @param beanName
+	 * @param methodName
+	 * @param parameterTypes
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 */
+	public static boolean existBeanAndMethod(String beanName, String methodName, Class<?>[] parameterTypes){
+		if(! getApplicationContext().containsBean(beanName)) {
+			return false;
+		}
+		
+		Object serviceImpl = SpringContextHolder.getBean(beanName);
+		Method method;
+		try {
+			method = serviceImpl.getClass().getMethod(methodName,parameterTypes);
+			if (method == null) {
+				return false;
+			}
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+		
+	}
+	
+	public static boolean existBean(String beanName) {
+		return getApplicationContext().containsBean(beanName);
+	}
+
+	public static String getActiveProfile() {
+		return getApplicationContext().getEnvironment().getActiveProfiles()[0];
 	}
 }

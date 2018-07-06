@@ -9,7 +9,7 @@
 	<artifactId>myron-common-util</artifactId>
 
 	<dependencies>
-		<!-- log4j -->
+		<!-- log4j
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -22,6 +22,7 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
+		-->
 	
 		<!-- json basebean的日期转换 移到databean -->
 		<dependency>
@@ -57,9 +58,7 @@
 			<artifactId>spring-context</artifactId>
 		</dependency>
 
-		<!-- 工具类UserUtils 获取当前授权对象 -->
-		
-
+		<!-- 中文转拼音 -->
 		<dependency>
 			<groupId>com.belerweb</groupId>
 			<artifactId>pinyin4j</artifactId>
@@ -124,6 +123,12 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml-schemas</artifactId>
 			<version>3.11</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${httpclient.version}</version>
 		</dependency>
 	</dependencies>
 </project>
