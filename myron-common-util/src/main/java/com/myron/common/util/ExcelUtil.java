@@ -350,6 +350,9 @@ public class ExcelUtil {
         return value;
     }
 
+    /**
+     * 数据处理接口
+     */
     public interface DataHandler {
         void handle(int rowIndex, Map<String, Object> rowData, XSSFRow row);
     }

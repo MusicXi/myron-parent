@@ -44,35 +44,35 @@ public class DataTypeUtil {
 	 */
 	public static String jdbcTypeToJavaType(String jdbcType) {
 		String resultStr = "String";
-		if ((jdbcType.equals("CHAR")) || (jdbcType.equals("VARCHAR"))
-				|| (jdbcType.equals("LONGVARCHAR"))
-				|| (jdbcType.equals("CLOB"))) {
+		if (("CHAR".equals(jdbcType)) || ("VARCHAR".equals(jdbcType))
+				|| ("LONGVARCHAR".equals(jdbcType))
+				|| ("CLOB".equals(jdbcType))) {
 			resultStr = "String";
-		} else if (jdbcType.equals("TINYINT")) {
+		} else if ("TINYINT".equals(jdbcType)) {
 			resultStr = "Byte";
-		} else if (jdbcType.equals("SMALLINT")) {
+		} else if ("SMALLINT".equals(jdbcType)) {
 			resultStr = "Short";
-		} else if (jdbcType.equals("INTEGER")) {
+		} else if ("INTEGER".equals(jdbcType)) {
 			resultStr = "Integer";
-		} else if (jdbcType.equals("BIGINT")) {
+		} else if ("BIGINT".equals(jdbcType)) {
 			resultStr = "Long";
-		} else if ((jdbcType.equals("DATETIME")) || (jdbcType.equals("DATE"))
-				|| (jdbcType.equals("TIME"))) {
+		} else if (("DATETIME".equals(jdbcType)) || ("DATE".equals(jdbcType))
+				|| ("TIME".equals(jdbcType))) {
 			resultStr = "Date";
-		} else if (jdbcType.equals("TIMESTAMP")) {
+		} else if ("TIMESTAMP".equals(jdbcType)) {
 			resultStr = "Date";
-		} else if ((jdbcType.equals("BINARY"))
-				|| (jdbcType.equals("VARBINARY"))
-				|| (jdbcType.equals("LONGVARBINARY"))
-				|| (jdbcType.equals("BLOB"))) {
+		} else if (("BINARY".equals(jdbcType))
+				|| ("VARBINARY".equals(jdbcType))
+				|| ("LONGVARBINARY".equals(jdbcType))
+				|| ("BLOB".equals(jdbcType))) {
 			resultStr = "Byte[]";
-		} else if ((jdbcType.equals("DECIMAL")) || (jdbcType.equals("NUMERIC"))) {
+		} else if (("DECIMAL".equals(jdbcType)) || ("NUMERIC".equals(jdbcType))) {
 			resultStr = "BigDecimal";
-		} else if ((jdbcType.equals("FLOAT")) || (jdbcType.equals("DOUBLE"))) {
+		} else if (("FLOAT".equals(jdbcType)) || ("DOUBLE".equals(jdbcType))) {
 			resultStr = "Double";
-		} else if (jdbcType.equals("REAL")) {
+		} else if ("REAL".equals(jdbcType)) {
 			resultStr = "Float";
-		} else if (jdbcType.equals("BIT")) {
+		} else if ("BIT".equals(jdbcType)) {
 			resultStr = "Boolean";
 		}
 		return resultStr;
