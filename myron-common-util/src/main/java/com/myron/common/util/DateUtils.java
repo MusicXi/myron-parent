@@ -174,10 +174,19 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 * @param args
 	 * @throws ParseException
 	 */
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args) throws ParseException, InterruptedException {
 //		System.out.println(formatDate(parseDate("2010/3/6")));
 //		System.out.println(getDate("yyyy年MM月dd日 E"));
 //		long time = new Date().getTime()-parseDate("2012-11-19").getTime();
 //		System.out.println(time/(24*60*60*1000));
+		Date now = new Date();
+		System.out.println(now);
+		String timeString = DateUtils.formatDate(now, "yyyyMMddHHmmss");
+		System.out.println(timeString);
+		System.out.println(timeString.substring(0, 8));
+		System.out.println(timeString.substring(0, 8)+"000000");
+		Date today = DateUtils.parseDate(timeString.substring(0, 8)+"000000", "yyyyMMddHHmmss");
+		System.out.println(today);
+		System.out.println(today.getTime());
 	}
 }

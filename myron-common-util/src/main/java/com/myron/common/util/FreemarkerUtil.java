@@ -1,15 +1,13 @@
 package com.myron.common.util;
 
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import freemarker.cache.StringTemplateLoader;
+import freemarker.template.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.*;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class FreemarkerUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FreemarkerUtil.class);
@@ -80,5 +78,85 @@ public class FreemarkerUtil {
         }
         writer.flush();
         writer.close();
+    }
+
+    /**
+     * 根据文件类型获取对应模板
+     *  freeMarkerConfigurer.setTemplateLoaderPaths("classpath:templates/java/mybatis","classpath:templates/mybatis");
+     * @param templateName
+     * @return
+     * @throws IOException
+     * @throws TemplateException
+     */
+    public static  Template getTemplate(String templateName, String[] templateLoaderPaths) throws IOException, TemplateException {
+        FreeMarkerConfigurer freeMarkerConfigurer=new FreeMarkerConfigurer();
+        freeMarkerConfigurer.setTemplateLoaderPaths(templateLoaderPaths);
+        Properties freemarkerSettings = new Properties();
+        freemarkerSettings.put("default_encoding", "UTF-8");
+        freemarkerSettings.put("locale", "zh_CN");
+        freeMarkerConfigurer.setFreemarkerSettings(freemarkerSettings);
+        freeMarkerConfigurer.afterPropertiesSet();
+        Template template = freeMarkerConfigurer.getConfiguration().getTemplate(templateName);
+        return template;
+    }
+    /**
+     * 执行动态模版
+     *
+     * @param templateName * 模版名称
+     * @param templateContent * 模版内容
+     * @param encoding * 编码格式
+     * @param data
+     * 数据集
+     * @return * @throws Exception
+     */
+    public static String executeFreeMarkerFromStringTemplate(String templateName, String templateContent, String encoding, Map<String, Object> data) throws Exception {
+        String result = "";
+        Writer out = null;
+        try {
+            Configuration cfg = new Configuration();
+            if (data == null) {
+                data = new HashMap<String, Object>();
+            }
+            data.put("DateMethodUtil", new DateMethod());
+            out = new StringWriter(2048);
+            StringTemplateLoader stringLoader = new StringTemplateLoader();
+            stringLoader.putTemplate(templateName, templateContent);
+            cfg.setTemplateLoader(stringLoader);
+            Template temp = cfg.getTemplate(templateName, encoding);
+            temp.process(data, out);
+            out.flush();
+            result = out.toString();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            out.close();
+        }
+        return result;
+    }
+
+    /**
+     * 日期运算函数 *
+     */
+    public static class DateMethod implements TemplateMethodModelEx {
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Object exec(List arguments) throws TemplateModelException {
+            Date date = ((SimpleDate) arguments.get(0)).getAsDate();
+            String type = arguments.get(1).toString();
+            Integer num = ((SimpleNumber) arguments.get(2)).getAsNumber().intValue();
+            Calendar localCalendar = Calendar.getInstance();
+            localCalendar.setTime(date);
+            if ("d".equalsIgnoreCase(type)) {
+                int i = localCalendar.get(Calendar.DATE);
+                localCalendar.set(Calendar.DATE, i + num);
+            } else if ("m".equalsIgnoreCase(type)) {
+                int i = localCalendar.get(Calendar.MONTH);
+                localCalendar.set(Calendar.MONTH, i + num);
+            } else if ("y".equalsIgnoreCase(type)) {
+                int i = localCalendar.get(Calendar.YEAR);
+                localCalendar.set(Calendar.YEAR, i + num);
+            }
+            return localCalendar.getTime();
+        }
     }
 }
