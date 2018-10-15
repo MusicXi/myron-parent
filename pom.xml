@@ -149,6 +149,8 @@
 
 		<!-- ehcache -->
 		<ehcache-core.version>2.5.0</ehcache-core.version>
+		<!--httpclient-->
+		<httpclient.version>4.4.1</httpclient.version>
 
 	</properties>
 
