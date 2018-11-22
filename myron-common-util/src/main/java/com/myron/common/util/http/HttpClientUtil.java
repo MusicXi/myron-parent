@@ -44,7 +44,7 @@ public class HttpClientUtil {
     /**
      * 发送http get请求
      */
-    public static HttpResponse httpGet(String url, Map<String,String> paramMap, Map<String,String> headers, String encode) throws URISyntaxException {
+    public static HttpResponse httpGet(String url, Map<String,String> paramMap, Map<String,String> headers, String encode) throws URISyntaxException,Exception {
         HttpResponse response = new HttpResponse();
         if(encode == null){
             encode = "utf-8";
@@ -72,7 +72,7 @@ public class HttpClientUtil {
             response.setReasonPhrase(httpResponse.getStatusLine().getReasonPhrase());
             response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }finally{
             try {
                 httpResponse.close();
@@ -90,7 +90,7 @@ public class HttpClientUtil {
     /**
      * 发送 http post 请求，参数以form表单键值对的形式提交。
      */
-    public static HttpResponse httpPostForm(String url,Map<String,String> params, Map<String,String> headers,String encode){
+    public static HttpResponse httpPostForm(String url,Map<String,String> params, Map<String,String> headers,String encode) throws Exception{
         HttpResponse response = new HttpResponse();
         if(encode == null){
             encode = "utf-8";
@@ -129,7 +129,7 @@ public class HttpClientUtil {
             response.setReasonPhrase(httpResponse.getStatusLine().getReasonPhrase());
             response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }finally{
             try {
                 httpResponse.close();
@@ -151,7 +151,7 @@ public class HttpClientUtil {
      * @param encode
      * @return
      */
-    public static HttpResponse httpPostRaw(String url,String stringJson,Map<String,String> headers, String encode){
+    public static HttpResponse httpPostRaw(String url,String stringJson,Map<String,String> headers, String encode) throws Exception{
         HttpResponse response = new HttpResponse();
         if(encode == null){
             encode = "utf-8";
@@ -182,7 +182,7 @@ public class HttpClientUtil {
             response.setReasonPhrase(httpResponse.getStatusLine().getReasonPhrase());
             response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }finally{
             try {
                 httpResponse.close();
@@ -204,7 +204,7 @@ public class HttpClientUtil {
      * @param encode
      * @return
      */
-    public static HttpResponse httpPutRaw(String url,String stringJson,Map<String,String> headers, String encode){
+    public static HttpResponse httpPutRaw(String url,String stringJson,Map<String,String> headers, String encode) throws Exception{
         HttpResponse response = new HttpResponse();
         if(encode == null){
             encode = "utf-8";
@@ -235,7 +235,7 @@ public class HttpClientUtil {
             response.setReasonPhrase(httpResponse.getStatusLine().getReasonPhrase());
             response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }finally{
             try {
                 httpResponse.close();
